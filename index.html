@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Attractor</title>
+		<style type="text/css">
+body {
+	margin: 0;
+	background-color: #000000;
+	color: #ffffff;
+}
+		</style>
+		<!--<script type="text/javascript" src="pixastic-lib.latest/pixastic.core.js"></script>
+		<script type="text/javascript" src="pixastic-lib.latest/actions/glow.js"></script>-->
+		<script type="text/javascript" src="pixastic.custom.js"></script>
+		<script type="text/javascript" src="jquery-1.6.4.min.js"></script>
+		<script type="text/javascript">
+
+function renderNice(context) {
+	var c = context.canvas;
+
+	//var glow = Pixastic.process(c, "glow", {amount: 1.0, radius: 1.0, leaveDOM: true});
+	var blur = Pixastic.process(c, "blurfast", {amount: 1, leaveDOM: true});
+	var blend = Pixastic.process(c, "blend", {image: blur, mode: "normal", amount: 0.3, leaveDOM: true});
+	context.drawImage(blend, 0, 0);
+	setTimeout(function () {
+		var blur2 = Pixastic.process(c, "blurfast", {amount: 2, leaveDOM: true});
+		var blend2 = Pixastic.process(c, "blend", {image: blur2, mode: "normal", amount: 0.2, leaveDOM: true});
+		context.drawImage(blend2, 0, 0);
+	}, 50);
+	setTimeout(function () {
+		var glow = Pixastic.process(c, "glow", {amount: 0.5, radius: 0.5, leaveDOM: true})
+		//context.drawImage(glow, 0, 0);
+
+		var blend = Pixastic.process(glow, "blend", {amount: 1, mode: "overlay", image: compositorContext.canvas});
+		context.drawImage(blend, 0, 0);
+	}, 100);
+}
+
+
+function Loop() {
+	var callFn;
+	this.fps = 50;
+	this.deltaMS = 1000 / this.fps;
+	this.timer;
+	return this;
+}
+Loop.prototype.callback = function (cb) {
+	callFn = cb;
+	return this;
+};
+
+Loop.prototype.fps = function (fps) {
+	this.fps = fps;
+	this.deltaMS = 1000 / fps;
+	return this;
+};
+
+Loop.prototype.loop = function () {
+	//callFn();
+	//this.timer = setTimeout(arguments.callee, this.deltaMS);
+	console.log(this.deltaMS);
+	this.timer = setInterval(callFn, this.deltaMS);
+	return this;
+};
+
+Loop.prototype.stop = function () {
+	clearTimeout(this.timer);
+	return this;
+};
+
+function render(x_n, y_n, a, b, c, d, scale) {
+	$('#rendernice').prop('disabled');
+	x_n = x_n || 0.0;
+	y_n = y_n || 0.0;
+	a = a || 0.0;
+	b = b || 0.0;
+	c = c || 0.0;
+	d = d || 0.0;
+	scale = scale || 1;
+	ctx.save();
+	ctx.fillStyle = "rgb(0,0,0)";
+	ctx.translate(0.5 * canvas.width, 0.5 * canvas.height);
+	ctx.fillRect(-canvas.width/2, -canvas.height/2, canvas.width, canvas.height);
+	ctx.fillStyle = "rgb(255,255,255)";
+	//ctx.shadowBlur = 10;
+	//ctx.shadowColor = "rgb(255,255,255)";
+	ctx.globalCompositeOperation = "source-over";
+	ctx.globalAlpha = 0.1;
+	
+	var renderWorker = new Worker("render.js");
+	renderWorker.postMessage({"x_n": x_n, "y_n": y_n, "a": a, "b": b, "c": c, "d": d, "amount": 2*Math.pow(8, 6)});
+	renderWorker.onmessage = function (event) {
+		
+		if (typeof event.data == "object") {
+			for (var p = 0, l = event.data.length; p < l; p++) {
+				ctx.fillRect(event.data[p][0] * scale, event.data[p][1] * scale, 1, 1);
+			}
+		} else if (typeof event.data == "string") {
+			console.log(event.data);
+			if (event.data == "done") {
+				renderWorker.terminate();
+				ctx.restore();
+				$('#rendernice').removeProp('disabled');
+				//renderNice(ctx);
+			}
+		}
+	};
+}
+
+var ctx, canvas, compositor, compositorContext;
+$(document).ready(function() {
+	canvas = document.getElementById("canvas");
+	ctx = canvas.getContext("2d");
+	//render(0.0, 0.0, 1.99, 2.0, 2.0, 2.0, 160);
+	//render(0.0, 0.0, 1.40, 1.56, 1.40, -6.56, 50);
+
+	compositor = document.createElement("canvas");
+	$(compositor).css('display', 'none');
+	$('body').append(compositor);
+	compositor.width = canvas.width;
+	compositor.height = canvas.height;
+
+	compositorContext = compositor.getContext("2d");
+
+	var grad1 = compositorContext.createLinearGradient(0, 0, canvas.width, canvas.height);
+	grad1.addColorStop(0, 'rgba(0,255,0,1)');
+	grad1.addColorStop(1, 'rgba(0,0,255,1)');
+	compositorContext.fillStyle = grad1;
+	compositorContext.globalCompositeOperation = "destination-over";
+	compositorContext.fillRect(0, 0, canvas.width, canvas.height);
+
+	$('#render').click(function() {
+		var a = parseFloat($('#a').val()),
+			b = parseFloat($('#b').val()),
+			c = parseFloat($('#c').val()),
+			d = parseFloat($('#d').val());
+		render(0, 0, a, b, c, d, 160);
+	});
+	$('#rendernice').click(function () {
+		renderNice(ctx);
+	});
+});
+		</script>
+	</head>
+	<body>
+		<canvas id="canvas" width="800" height="800"></canvas>
+		<br/>
+		<i>x<sub>n</sub> = sin( a y<sub>n - 1</sub> ) - cos( b x<sub>n - 1</sub> )</code><br/>
+		y<sub>n</sub> = sin( c x<sub>n - 1</sub> ) - cos( d y<sub>n - 1</sub> )</i><br/>
+		a <input type="number" value="1.99" id="a" />
+		b <input type="number" value="2.00" id="b" />
+		c <input type="number" value="2.00" id="c" />
+		d <input type="number" value="2.00" id="d" />
+		<input type="button" value="Render" id="render" />
+		<input type="button" value="Fancy" id="rendernice" />
+	</body>
+</html>

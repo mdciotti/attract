@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>WebGL Attractor</title>
+		<style type="text/css">
+		body {
+			margin: 0;
+			background-color: #000000;
+			color: #ffffff;
+		}
+		</style>
+		<script src="jquery-1.6.4.min.js" type="text/javascript"></script>
+		<script src="glMatrix.min.js" type="text/javascript"></script>
+		<!--<script src="glUtils.js" type="text/javascript"></script>-->
+		<script src="webgl2.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('#points input[type="range"]').val(pointCount);
+				$('#points input[type="text"]').val(pointCount);
+				$('#a input[type="range"]').val(A);
+				$('#a input[type="text"]').val(A);
+				$('#b input[type="range"]').val(B);
+				$('#b input[type="text"]').val(B);
+				$('#c input[type="range"]').val(C);
+				$('#c input[type="text"]').val(C);
+				$('#d input[type="range"]').val(D);
+				$('#d input[type="text"]').val(D);
+				$('#e input[type="range"]').val(E);
+				$('#e input[type="text"]').val(E);
+
+				$('#points input').change(function() {
+					running = false;
+					pointCount = parseFloat($(this).val());
+					$('#points input[type="range"]').val(pointCount);
+					$('#points input[type="text"]').val(pointCount);
+					initShaders();
+					running = true;
+				});
+				$('#a input').change(function() {
+					running = false;
+					A = parseFloat($(this).val());
+					$('#a input[type="range"]').val(A);
+					$('#a input[type="text"]').val(A);
+					initShaders();
+					running = true;
+				});
+				$('#b input').change(function() {
+					running = false;
+					B = parseFloat($(this).val());
+					$('#b input[type="range"]').val(B);
+					$('#b input[type="text"]').val(B);
+					initShaders();
+					running = true;
+				});
+				$('#c input').change(function() {
+					running = false;
+					C = parseFloat($(this).val());
+					$('#c input[type="range"]').val(C);
+					$('#c input[type="text"]').val(C);
+					initShaders();
+					running = true;
+				});
+				$('#d input').change(function() {
+					running = false;
+					D = parseFloat($(this).val());
+					$('#d input[type="range"]').val(D);
+					$('#d input[type="text"]').val(D);
+					initShaders();
+					running = true;
+				});
+				$('#e input').change(function() {
+					running = false;
+					E = parseFloat($(this).val());
+					$('#e input[type="range"]').val(E);
+					$('#e input[type="text"]').val(E);
+					initShaders();
+					running = true;
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<canvas id="glcanvas" width="800" height="800">
+		Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element.
+		</canvas>
+		<ul id="controls" style="position:fixed;top:0;right:0;">
+			<li id="points">
+				P:
+				<input type="range" min="10000" max="200000" step="1000" />
+				<input type="text" size="3" />
+			</li>
+			<li id="a">
+				a:
+				<input type="range" min="-5" max="5" step="0.1" />
+				<input type="text" size="3" />
+			</li>
+			<li id="b">
+				b:
+				<input type="range" min="-5" max="5" step="0.1" />
+				<input type="text" size="3" />
+			</li>
+			<li id="c">
+				c:
+				<input type="range" min="-5" max="5" step="0.1" />
+				<input type="text" size="3" />
+			</li>
+			<li id="d">
+				d:
+				<input type="range" min="-5" max="5" step="0.1" />
+				<input type="text" size="3" />
+			</li>
+			<li id="e">
+				e:
+				<input type="range" min="-5" max="5" step="0.1" />
+				<input type="text" size="3" />
+			</li>
+		</ul>
+	</body>
+</html>
