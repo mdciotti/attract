@@ -77,7 +77,9 @@ function draw() {
 
 	window.requestAnimationFrame(draw);
 
-	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+	// gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+	var size = Math.min(gl.viewportWidth, gl.viewportHeight);
+	gl.viewport(0, 0, size, size);
 
 	gl.clearColor(0.0, 0.0, 0.0, 1.0);
 	//gl.clear(gl.COLOR_BUFFER_BIT);
@@ -111,7 +113,7 @@ function draw() {
 	}
 	var pMatrix = mat4.create();
 	mat4.identity(pMatrix);
-	mat4.perspective(120, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+	// mat4.perspective(120, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 	gl.uniformMatrix4fv(pUniform, false, pMatrix);
 
 	var a_pointSize = gl.getAttribLocation(program, "a_pointSize");
